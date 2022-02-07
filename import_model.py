@@ -7,7 +7,7 @@ from sklearn.linear_model import LinearRegression
 import pandas as pd
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
-#import numpy as np
+
 
 DATA_RAW = pd.read_csv('Import_Data_v4.csv')
 DATA_RAW.dropna(inplace=True)
@@ -15,8 +15,17 @@ DATA_RAW = DATA_RAW.iloc[len(DATA_RAW)-1000:-1,:]
 
 loads = DATA_RAW[['DEMAND-MISO','DEMAND-PJM','WIND-MISO','WIND-PJM','IMPORT-PJM']]
 
-AVGS = DATA_RAW.groupby(['DayOfWeek', 'Hour']).mean()
-AVGS.reset_index(inplace=True)
+AVGS = DATA_RAW.groupby(['DayOfWeek', 'Hour'], as_index = False).mean()
+AVGS.reset_index() #reset the index
+#print(AVGS.loc[ (AVGS.DayOfWeek=='Monday') & (AVGS.Hour ==0)])
+
+
+AVGS1 = DATA_RAW.index.map(lambda d: AVGS.loc[ (AVGS.DayOfWeek==d.DayOfWeek) & (AVGS.Hour==d.Hour)])
+
+print( AVGS1)
+
+
+#AVGS.reset_index(inplace=True)
 
 STDVS = DATA_RAW.groupby(['DayOfWeek', 'Hour']).std()
 STDVS.reset_index(inplace=True)
@@ -40,7 +49,7 @@ for r in loads.index:
         SD = float(SD[c])
         
         
-        loads.loc[r,c] = (loads.loc[r,c]-PROM)/SD
+        #loads.loc[r,c] = (loads.loc[r,c]-PROM)/SD
 
 imp = loads[['IMPORT-PJM']]
 loads.drop('IMPORT-PJM', axis=1, inplace=True)
