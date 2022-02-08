@@ -1,3 +1,4 @@
+from pickle import TRUE
 from re import M
 #from tkinter.tix import Tree
 from sklearn import linear_model
@@ -9,7 +10,7 @@ from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 
 
-DATA_RAW = pd.read_csv('Import_Data_v4.csv')
+DATA_RAW = pd.read_csv('Import_Data_v5.csv')
 DATA_RAW.dropna(inplace=True)
 #print(DATA_RAW.columns[1])
 AVG2 = pd.DataFrame()
@@ -34,14 +35,16 @@ for c in DATA_RAW.columns[3:]:
 DATA_RAW = DATA_RAW[:-1]
 
 loads = DATA_RAW.iloc[:,3:]
-print(loads)
 imp = loads[['IMPORT-PJM']]
+
 loads.drop('IMPORT-PJM', axis=1, inplace=True)
-  
+elim = [4,5,7,8,9,11,12,13,14]
+loads.drop(loads.columns[elim],axis = 1, inplace = True)
+print(loads)
+
+
 regr = linear_model.LinearRegression()
 loads_train, loads_test, imp_train, imp_test = train_test_split(loads, imp, test_size=0.2, random_state=0)
-
-
 regr.fit(loads_train, imp_train)
 imp_pred = regr.predict(loads_test)
 
