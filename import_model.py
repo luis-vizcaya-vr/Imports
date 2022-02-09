@@ -6,8 +6,11 @@ from sklearn.model_selection import train_test_split
 #from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
 import pandas as pd
+import numpy as np
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import acf, pacf
+from scipy import stats
 
 
 DATA_RAW = pd.read_csv('Import_Data_v5.csv')
@@ -34,21 +37,50 @@ for c in DATA_RAW.columns[3:]:
 
 DATA_RAW = DATA_RAW[:-1]
 
+
 loads = DATA_RAW.iloc[:,3:]
+
+loads = loads[(np.abs(stats.zscore(loads)) < 1.5).all(axis=1)]
+
+loads.dropna(inplace = True)
+loads = loads.diff()[1:]
 imp = loads[['IMPORT-PJM']]
 
-loads.drop('IMPORT-PJM', axis=1, inplace=True)
-elim = [4,5,7,8,9,11,12,13,14]
-loads.drop(loads.columns[elim],axis = 1, inplace = True)
-print(loads)
-
+#elim = [4,5,9,11]
+#loads.drop(loads.columns[elim],axis = 1, inplace = True)
+#loads.drop(['IMPORT-PJM','LMP-WEST-PJM','LMP-WESTERN-PJM','LMP-MINNESOTA-MISO','LMP-ILLINOIS-PJM','LMP-MICHIGAN-PJM','LMP-COMED-PJM','LMP-AEP-PJM'], axis=1, inplace=True)
+loads.drop(['IMPORT-PJM'], axis=1, inplace=True)
 
 regr = linear_model.LinearRegression()
-loads_train, loads_test, imp_train, imp_test = train_test_split(loads, imp, test_size=0.2, random_state=0)
+train_len = int(len(loads)*0.8)
+print('train_len:', train_len)
+loads_train = loads[:train_len]
+print('len(load_train): ', len(loads_train))
+loads_test = loads[train_len:]
+imp_train = imp[:train_len]
+imp_test = imp[train_len:]
+
+#loads_train, loads_test, imp_train, imp_test = train_test_split(loads, imp, test_size=0.2, random_state=0)
+#print('load_train: ',loads_test)
+#print('imp_train:',imp_test)
+
+
+
 regr.fit(loads_train, imp_train)
 imp_pred = regr.predict(loads_test)
+print('R2: before SARIMA',r2_score(imp_test,imp_pred))
+
+pred_train= regr.predict(loads_train)   # predicted values for training data
+
+residual = imp_train - pred_train       # residual in training data
 
 
+plt.plot(imp)
+#plt.legend()
 
-print('R2: ',r2_score(imp_test,imp_pred))
+acf_vals = acf(residual)
+num_lags = 20
+#plt.bar(range(num_lags), acf_vals[:num_lags])
+plt.show()
+
 
