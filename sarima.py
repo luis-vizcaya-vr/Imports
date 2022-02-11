@@ -50,11 +50,11 @@ imp_train = imp[:train_len-168]
 imp_test = imp[train_len-168:]
 
 acf_vals = acf(imp_train)
-num_lags = 30
-#plt.bar(range(num_lags), acf_vals[:num_lags])
+num_lags = 15
+plt.bar(range(num_lags), acf_vals[:num_lags])
 
 pacf_vals = pacf(imp_train)
-#plt.bar(range(num_lags), pacf_vals[:num_lags])
+plt.bar(range(num_lags), pacf_vals[:num_lags])
 
 my_order = (0,1,0)
 my_seasonal_order = (1, 0, 1, 12)
