@@ -1,11 +1,7 @@
-from pickle import TRUE
-from re import M
-#from tkinter.tix import Tree
+
 from sklearn import linear_model
-import datetime
 from datetime import datetime,date
 from sklearn.model_selection import train_test_split
-#from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
 import pandas as pd
 import numpy as np
@@ -18,27 +14,18 @@ from statsmodels.graphics.tsaplots import plot_acf
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import max_error
 
-
 DATA_RAW = pd.read_csv('Import_Data_daily.csv')
 DATA_RAW.dropna(inplace=True)
 DATA_RAW.reset_index()
-#DATA_RAW['Date'] = pd.to_datetime(DATA_RAW['Date'])
-
-print(DATA_RAW['Date'])
 AVG2 = pd.DataFrame()
 STD2 = pd.DataFrame()
-#plt.plot(DATA_RAW['IMPORT-PJM'])
-#plt.show()
-
-
 AVGS = DATA_RAW.groupby(['DayOfWeek']).mean()                   #calculating average for each hour 
 AVGS.reset_index(inplace=True)                                  #reset the index
 STDVS = DATA_RAW.groupby(['DayOfWeek']).std()                   #calculating std for each hour
 STDVS.reset_index(inplace=True)   
-
 imp = DATA_RAW['IMPORT-PJM']
 imp = (imp -imp.mean())/imp.std()
-
+print(imp)
 
 #print('train_len: ',train_len)         
 #acf_vals = acf(imp_train)

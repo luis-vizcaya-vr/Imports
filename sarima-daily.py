@@ -21,12 +21,8 @@ from sklearn.metrics import max_error
 
 DATA_RAW = pd.read_csv('Import_Data_daily.csv')
 DATA_HOURLY = pd.read_csv('Import_Data_V5.csv')
-
 DATA_RAW.dropna(inplace=True)
 DATA_RAW.reset_index()
-#DATA_RAW['Date'] = pd.to_datetime(DATA_RAW['Date'])
-
-print(DATA_RAW['Date'])
 AVG2 = pd.DataFrame()
 STD2 = pd.DataFrame()
 #plt.plot(DATA_RAW['IMPORT-PJM'])
@@ -37,9 +33,8 @@ AVGS_HOURLY = DATA_HOURLY.groupby(['DayOfWeek','Hour']).mean()                  
 AVGS_HOURLY.reset_index(inplace=True)                                  #reset the index
 STDVS_HOURLY = DATA_HOURLY.groupby(['DayOfWeek','Hour']).std()                   #calculating std for each hour
 STDVS_HOURLY.reset_index(inplace=True)   
-
 imp = DATA_RAW['IMPORT-PJM']
-imp = (imp -imp.mean())/imp.std()
+#imp = (imp -imp.mean())/imp.std()
 
 #print('train_len: ',train_len)         
 #acf_vals = acf(imp_train)
@@ -81,20 +76,16 @@ train_len = int(len(imp))
 
 #best parameters selected
 
-imp_train = imp[28:train_len-14]
+imp_train = imp[7:train_len-14]
 imp_test = imp[train_len-14:]
-my_order = (2,1,2)
-my_seasonal_order = (1, 0, 1, 7)
+my_order = (4,1,4)
+my_seasonal_order = (4, 0, 2, 7)
 model = SARIMAX(imp_train, order=my_order, seasonal_order=my_seasonal_order)
 model_fit = model.fit()
 predictions = model_fit.forecast(len(imp_test))
 predictions = pd.Series(predictions)
 predictions.reset_index(inplace = True, drop=True)
 MAE = mean_absolute_error(imp_test, predictions)
-                    
-
-#R2 = r2_score(imp_test, predictions)
-
 predictions = list(predictions)
 imp_test = list(imp_test)
 
@@ -102,6 +93,8 @@ residuals = [float(a_i) - float(b_i) for a_i, b_i in zip(imp_test, predictions)]
 
 
 print('MAE', MAE)
+print('AVERAGE IMP', np.average(imp_test))
+
 print('%MAE', MAE/np.average(imp_test))
 
 #print('Best Parameters [p,q,P,Q,S]', Best_Par)
