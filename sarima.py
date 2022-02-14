@@ -1,9 +1,4 @@
-from pickle import TRUE
-from re import M
-#from tkinter.tix import Tree
-from sklearn import linear_model
 from sklearn.model_selection import train_test_split
-#from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
 import pandas as pd
 import numpy as np
@@ -41,7 +36,6 @@ loads = DATA_RAW.iloc[:,3:]                                     #taking the data
 loads = loads[(np.abs(stats.zscore(loads)) < 2).all(axis=1)]    #removing outliers
 loads.dropna(inplace = True)                                    #removing nan values
 loads.reset_index(inplace = True)                               #reset the index
-#loads = loads.diff()[1:]                                        #applying first difference for removing trend
 imp = loads[['IMPORT-PJM']]
 loads.drop(['IMPORT-PJM'], axis=1, inplace=True)       
 train_len = int(len(imp))
