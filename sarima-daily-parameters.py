@@ -27,13 +27,6 @@ imp = DATA_RAW['IMPORT-PJM']
 imp = (imp -imp.mean())/imp.std()
 print(imp)
 
-#print('train_len: ',train_len)         
-#acf_vals = acf(imp_train)
-#num_lags = 15
-#plt.bar(range(num_lags), acf_vals[:num_lags])
-#pacf_vals = pacf(imp_train)
-#plt.bar(range(num_lags), pacf_vals[:num_lags])
-#plt.show()
 
 
 MIN_MAE = 50000
