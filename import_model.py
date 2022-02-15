@@ -27,9 +27,13 @@ for c in DATA_RAW.columns[3:-3]:
     STD2[c] = DATA_RAW['TimeLabel'].map(STDVS.set_index('TimeLabel')[c])
 AVG2['TimeLabel'] = DATA_RAW['TimeLabel']
 STD2['TimeLabel'] = DATA_RAW['TimeLabel']
- 
+
+
 DATA_RAW = DATA_RAW[:-1] #droping the last row due to noise
+
+
 loads = DATA_RAW.iloc[:,3:]                                     #taking the data only
+
 loads.drop(['TimeLabel'], axis=1, inplace=True)
 print('loads:',loads)
 
