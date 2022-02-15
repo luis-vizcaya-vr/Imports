@@ -64,7 +64,7 @@ backtest_input_dict = {'ISONE': {'start_date': datetime(2020,6,1),
                                 # 'stack_file': 'pjmStack20192020_dates.csv',
                                 'demand_file': 'blue_steel_demand_PJM.csv', # This should be more carefully considered. We should be using historically forecast demand and applying zonal weighting to them (in this case we would query for the demand from SIDs)
                                 'demand_sids_dict': {4336: 'MidA', 6023: 'South', 6170: 'West', 64374: 'COMED'}, # These are SIDs for MidA, South, West, COMED demand actuals (in that order)
-                                'import_sids_dict': {7732: 'MISO', 7730: 'MISO', 6096: 'NYISO'},
+                                'import_sids_dict': {7732: 'MISO', 6096: 'NYISO'},
                                 'hub_price_sids_dict': {4463: 'WHUB', 4460: 'EHUB', 5516: 'ADHUB', 4887: 'NIHUB', 4456:'AE', 5511:'AEP',  4458:'APS', 54614: 'ATSI', 4450:'PPL', 4448: 'PSEG', 4459:'RECO',  
                                 4882: 'COMED', 5517:'DAYTON', 59465: 'DEOK', 6000:'DOM', 4457:'DPL', 5773:'DUQ', 65962:'EKPC', 4453: 'METED', 4449: 'PE',4455: 'PEPCO', 4454:'PN'},
                                 'fuel_price_file': 'allFuelPrice_1920.csv',

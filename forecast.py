@@ -40,8 +40,6 @@ def Hyper_Param_Sarima(Data, ps,qs,Ps,Qs,Ss,starts,Forecast_Period = 7):
                                 Best_Par['Q'] = Q
                                 Best_Par['S'] = S
                                 Best_Par['start'] = int(start)
-                                
-                                #Best_Par = [p,q,P,Q,S,start] 
     results['MIN_MAE'] = MIN_MAE
     results['MIN_MAX_MAE'] = MIN_MAX_ERROR
     results['Best_Par'] = Best_Par
