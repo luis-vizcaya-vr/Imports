@@ -26,7 +26,7 @@ ps = range(1 ,2)
 qs = range(1 ,2)
 Ps = range(1 ,2)
 Qs = range(1 ,2)
-Ss = range(7, 15, 7)
+Ss = range(7, 21, 7)
 starts = range(0,35,7)
 
 
