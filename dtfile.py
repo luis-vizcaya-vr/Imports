@@ -21,6 +21,12 @@ def eval_model(model,train):
   res['MAPE'] = drt.metrics.metrics.mape(val, forecast)
   res['R2'] = drt.metrics.metrics.r2_score(val, forecast)
   res['Forecast'] = forecast
+  
+  backtest = model.historical_forecasts(series=train, 
+                                          start=0.8, 
+                                          verbose=True, 
+                                          forecast_horizon=FORECAST_PERIOD )
+  print('Backtest: ', backtest)  
   return res
 
 def Best_model(model_list, train,metric = 'MAPE'):
@@ -45,11 +51,11 @@ parameters = {
         {"p": [1,2,3],
         "q": [1]},
     ExponentialSmoothing:
-        {"trend": [ModelMode.MULTIPLICATIVE, ModelMode.ADDITIVE, 'None']},
+        {"trend": [ModelMode.MULTIPLICATIVE, ModelMode.ADDITIVE]},
     FFT:
-        {"nr_freqs_to_keep": [2,3,4,5,6,7,8,9,10,11,12,13,14],
+        {"nr_freqs_to_keep": [2,3,4,5,6,7,8],
         "trend":['poly', 'exp', 'None'],
-        "trend_poly_degree": [1,2,3,4]
+        "trend_poly_degree": [1,2,3,]
          },
     KalmanForecaster:
         {"dim_x": [2,3,4,5]}
@@ -62,3 +68,5 @@ Fourier = FFT.gridsearch(parameters = parameters[FFT], series = series, forecast
 Kalman = KalmanForecaster.gridsearch(parameters = parameters[KalmanForecaster], series = series, forecast_horizon= FORECAST_PERIOD)
 model_list = [AutoARIMA(), Exponential[0], Fourier[0], Kalman[0]]
 a = Best_model(model_list, train, metric = 'MAPE')
+
+
