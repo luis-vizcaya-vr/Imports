@@ -45,28 +45,20 @@ parameters = {
         {"p": [1,2,3],
         "q": [1]},
     ExponentialSmoothing:
-        {"trend": [ModelMode.MULTIPLICATIVE, ModelMode.ADDITIVE]},
+        {"trend": [ModelMode.MULTIPLICATIVE, ModelMode.ADDITIVE, 'None']},
     FFT:
         {"nr_freqs_to_keep": [2,3,4,5,6,7,8,9,10,11,12,13,14],
         "trend":['poly', 'exp', 'None'],
-        "trend_poly_degree": [2,3,4]
+        "trend_poly_degree": [1,2,3,4]
          },
     KalmanForecaster:
-        {"dim_x": [1,2,3,4,5]}
+        {"dim_x": [2,3,4,5,6]}
 
-    
 }
 
-#print('Parameters for Arima: ', parameters[ARIMA])
 
-#arima = ARIMA.gridsearch(parameters = parameters[ARIMA], series = series, forecast_horizon= 14)
-#arima[0].fit(train)
 Exponential = ExponentialSmoothing.gridsearch(parameters = parameters[ExponentialSmoothing], series = series, forecast_horizon= FORECAST_PERIOD)
 Fourier = FFT.gridsearch(parameters = parameters[FFT], series = series, forecast_horizon= FORECAST_PERIOD)
 Kalman = KalmanForecaster.gridsearch(parameters = parameters[KalmanForecaster], series = series, forecast_horizon= FORECAST_PERIOD)
-
 model_list = [AutoARIMA(), Exponential[0], Fourier[0], Kalman[0]]
-
-
-#print(p.predict(7))
 a = Best_model(model_list, train, metric = 'MAPE')
