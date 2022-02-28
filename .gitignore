@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 venv/
+=======
+venv/
+__pycache__/
+.ipynb_checkpoints/
+>>>>>>> Features-LR
