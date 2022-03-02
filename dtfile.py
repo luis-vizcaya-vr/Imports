@@ -1,16 +1,20 @@
 import pandas as pd
 from darts import *
+from darts import metrics 
 import matplotlib.pyplot as plt
 import darts as drt
-FORECAST_PERIOD = 14
 from darts.models import *
 from darts.utils.utils import *
-#from metatrader5 import *
 
-df = pd.read_csv('NATGAS-DATA.csv', usecols= [0,1])
-df['Date1'] = pd.date_range(start='9/1/2021', end = '02/21/2022', freq='D')
+FORECAST_PERIOD = 14
+df = pd.read_csv('NATGAS-DATA_v2.csv', usecols= [0,1])
+print('Longitud antes: ',len(df))
+split_date = pd.datetime(2021,12,31)
+df['Date1'] = pd.date_range(start='1/1/2020', end = '03/01/2022', freq='D')
+df = df.loc[df['Date1']< split_date]
 
-series = TimeSeries.from_dataframe(df, time_col = 'Date1',  value_cols ='NatGas - Transco Z6 Non-NY', freq = 'd', fill_missing_dates = True)
+print('Longitud despues:',len(df))
+series = TimeSeries.from_dataframe(df, time_col = 'Date1',  value_cols ='NatGas - Dominion South', freq = 'd', fill_missing_dates = True)
 train, val = series[:-FORECAST_PERIOD], series[-FORECAST_PERIOD:]
 
 def eval_model(model,train):
@@ -19,6 +23,7 @@ def eval_model(model,train):
   model.fit(train)
   forecast = model.predict(len(val))
   res['MAPE'] = drt.metrics.metrics.mape(val, forecast)
+  res['MASE'] = drt.metrics.metrics.mase(val, forecast,train)
   res['R2'] = drt.metrics.metrics.r2_score(val, forecast)
   res['Forecast'] = forecast
   
@@ -26,10 +31,10 @@ def eval_model(model,train):
                                           start=0.8, 
                                           verbose=True, 
                                           forecast_horizon=FORECAST_PERIOD )
-  print('Backtest: ', backtest)  
+  #print('Backtest: ', backtest)  
   return res
 
-def Best_model(model_list, train,metric = 'MAPE'):
+def Best_model(model_list, train, metric = 'MAPE'):
   Best = ''
   Plot_Id = 100
   results = {}
@@ -62,11 +67,15 @@ parameters = {
 
 }
 
-
-Exponential = ExponentialSmoothing.gridsearch(parameters = parameters[ExponentialSmoothing], series = series, forecast_horizon= FORECAST_PERIOD)
+'''
+Exponential = ExponentialSmoothing.gridsearch(parameters = parameters[ExponentialSmoothing], series = series, forecast_horizon= FORECAST_PERIOD, metric = metrics.metrics.mape)
 Fourier = FFT.gridsearch(parameters = parameters[FFT], series = series, forecast_horizon= FORECAST_PERIOD)
 Kalman = KalmanForecaster.gridsearch(parameters = parameters[KalmanForecaster], series = series, forecast_horizon= FORECAST_PERIOD)
 model_list = [AutoARIMA(), Exponential[0], Fourier[0], Kalman[0]]
-a = Best_model(model_list, train, metric = 'MAPE')
+'''
+model_list = [AutoARIMA(), NaiveDrift()]
+
+
+a = Best_model(model_list, train, metric = 'MASE')
 
 
