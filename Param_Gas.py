@@ -1,22 +1,22 @@
+from tabnanny import verbose
 import pandas as pd
 from darts import *
 from darts import metrics 
 import matplotlib.pyplot as plt
-import darts as drt
-
+#import darts as drt
 from darts.models import *
 from darts.utils.utils import *
-
+from darts.dataprocessing.transformers import (Scaler, MissingValuesFiller, Mapper, InvertibleMapper,)
+import winsound
 
 FORECAST_PERIOD = 14
 df = pd.read_csv('NATGAS-DATA_V2.csv', usecols= [0,2])
 #df['Date1'] = pd.date_range(start='1/1/2020', end = '03/01/2022', freq='D')
 End_Date = pd.datetime(2021,12,31)
 Start_Date = pd.datetime(2021,5,1)
-
 df['Date'] = pd.DatetimeIndex(df['Date'])
-
 df = df.loc[(df['Date'] <= End_Date) ]
+
 
 
 #series = TimeSeries.from_dataframe(df, time_col = 'Date',  value_cols ='NatGas - Transco Z6 Non-NY', freq = 'd', fill_missing_dates = True)
@@ -57,11 +57,10 @@ def Best_model(model_list, train, metric = 'MAPE'):
   return results
 
 
-
 parameters = {
     ARIMA:
-        {"p": [1,2,3,4,5,6,7],
-        "q": [1,2]},
+        {"p": [2,3,4,5,6],
+        "q": [1,2,3]},
     ExponentialSmoothing:
         {"trend": [ModelMode.MULTIPLICATIVE, ModelMode.ADDITIVE]},
     FFT:
@@ -69,25 +68,28 @@ parameters = {
         "trend":['poly', 'exp', 'None'],
         "trend_poly_degree": [1,2]
          },
-    KalmanForecaster:
-        {"dim_x": [2,3,4]}
+
 
 }
 
 #print("Gridsearch Exponential..")
-#Exponential = ExponentialSmoothing.gridsearch(parameters = parameters[ExponentialSmoothing], series = series, forecast_horizon= FORECAST_PERIOD, metric = metrics.metrics.mape)
-print("Gridsearch FFT")
-ARIMA_MODEL = ARIMA.gridsearch(parameters = parameters[ARIMA], series = series, forecast_horizon= FORECAST_PERIOD)
-#Fourier = FFT.gridsearch(parameters = parameters[FFT], series = series, forecast_horizon= FORECAST_PERIOD)
-#Kalman = KalmanForecaster.gridsearch(parameters = parameters[KalmanForecaster], series = series, forecast_horizon= FORECAST_PERIOD)
-#model_list = [Exponential[0], Fourier[0], Kalman[0]]
-#model_list = [Fourier[0], Kalman[0]]
+print("Gridsearch ... ")
+Arima_Model = ARIMA.gridsearch(parameters = parameters[ARIMA], series = series, forecast_horizon= FORECAST_PERIOD, verbose = False, n_jobs = -1, metric = metrics.metrics.mape)
+Exponential = ExponentialSmoothing.gridsearch(parameters = parameters[ExponentialSmoothing], series = series, forecast_horizon= FORECAST_PERIOD, metric = metrics.metrics.mape)
+model_list = [Arima_Model[0], Exponential[0]]
 
 #a = Best_model(model_list, train, metric = 'MAPE')
-h = ARIMA_MODEL[0].historical_forecasts(series, start = 0.4, forecast_horizon= FORECAST_PERIOD)
+h = Arima_Model[0].historical_forecasts(series, start = 0.4, forecast_horizon= FORECAST_PERIOD, verbose = False)
 print(metrics.metrics.mape(h, series))
+h.plot(label = 'forecast-Arima')
+
+h = Exponential[0].historical_forecasts(series, start = 0.4, forecast_horizon= FORECAST_PERIOD, verbose = False)
+print(metrics.metrics.mape(h, series))
+h.plot(label = 'forecast - Exponential')
+
+winsound.Beep(440, 100)
+plt.show()
 
 #h = Kalman[0].historical_forecasts(series, start = 0.4, forecast_horizon= FORECAST_PERIOD)
-print(metrics.metrics.mape(h, series))
 #h = Fourier[0].historical_forecasts(series, start = 0.4, forecast_horizon= FORECAST_PERIOD)
-print(metrics.metrics.mape(h, series))
+#print(metrics.metrics.mape(h, series))
