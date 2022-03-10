@@ -1,0 +1,43 @@
+in_stack,in_fuel_price
+BIT - CAPP,BIT - CAPP
+BIT - ILB,BIT - ILB
+BIT - NAPP,BIT - NAPP
+DFO,Gasoil
+LFG,BF/Ref Gas
+MISC,Biomass
+MSW,Biomass
+MWH,Biomass
+NG -  PG&E,PG and E Citygate
+NG - ANR (SouthWestCentral),ANR LA
+NG - Chicago City Gate,Chicago Citygate
+NG - Consumers,Consumers
+NG - Dominion South,Dominion-South
+NG - Maritimes,Henry Hub
+NG - NGPL Midcon,NGPL Midcon
+NG - Panhandle,Henry Hub
+NG - Southern Star,Southern Star
+NG - TETCO M3 NY,TETCO M3
+NG - TETCO-M1 30,TETCO M1 30-in
+NG - TGP-Z6 200L,TGP Z6 del
+NG - TGT-SL (FT),TGP Z6 del
+NG - Transco-Z5 (non-WGL),Transco Z5 del
+NG - Transco-Z6 (NY),Transco Z6 NY
+NG - Transco-Z6 (non-NY),Transco Z6 Non-NY
+NG-G-Algonquin Citygates,Algonquin Citygate
+NG-Henry,Henry Hub
+NG-NON-G (Algonquin),Algonquin Citygate
+NUC,Uranium
+PC,Solar
+RFO,LSFO
+SUB - PRB,SUB - PRB
+SUN,Solar
+WAT,Hydro
+WND,Wind
+BIT - UB,BIT - UB
+Lignite,Lignite
+NG -  Malin,GTN Malin
+NG - CIG-Mainline,Columbia Gulf; mainline
+NG - Demarc,NNG Demarc
+NG - EP-SJ Blanco Pool,El Paso Permian
+NG - OneOK,Oneok OK
+NG - Ventura,NBPL Ventura
