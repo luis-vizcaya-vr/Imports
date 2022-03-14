@@ -1,15 +1,13 @@
 FUEL,SID
-NG - TETCO M3 NY,4630
-NG - Dominion South,54550
+TETCO M3,4630
+Dominion-South,54550
 BIT - CAPP,40320
-NG - Transco-Z6 (non-NY),4631
+Transco Z6 Non-NY,4631
 BIT - NAPP,40319
 BIT - ILB,6206
-NG - Chicago City Gate,4625
-NG-Henry,17015
-NUC,10848
-NG - Transco-Z6 (NY),17008
+Chicago Citygate,4625
+Henry Hub,17015
+Uranium,10848
+Transco Z6 NY,17008
 SUB - PRB,6207
-NG - Transco-Z5 (non-WGL),17254
-NG - Consumers,4626
-NG - ANR (SouthWestCentral),76451
+Transco Z5 del,17254
