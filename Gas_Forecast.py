@@ -18,8 +18,8 @@ import seaborn as sn
 
 parameters = {
     "ARIMA":
-        {"p": [1],
-        "q": [5],
+        {"p": [1,2,3],
+        "q": [3,4,5,6],
         "d": [0]
        },
 
@@ -49,8 +49,7 @@ FORECAST_PERIOD = 14
 Today = datetime.date.today()
 Forecast_Date = Today + timedelta(days = FORECAST_PERIOD)
 Fuel_list = list(pd.read_csv('FUEL_SIDS.csv')['FUEL'])
-#print('Fuel_list: ', Fuel_list)
-Fuel_list = Fuel_list[0:2]
+Fuel_list = Fuel_list[0:3]
 temp = pd.read_csv('NATGAS-DATA_V3.csv', usecols= [0,11])
 fuel_mapping = pd.read_csv('fuel_mapping.csv')
 fuel_mapping.set_index('in_stack', drop = True, inplace=True)
@@ -58,7 +57,7 @@ fuel_dict = fuel_mapping.to_dict()
 Fuel_Data = pd.read_csv('FUEL_PRICES_DATA.csv')
 Fuel_Data['Date'] = pd.DatetimeIndex(Fuel_Data['Date'])
 
-def Best_model_V2(model_list, train, metric = 'MAPE', exog = None, period =14):
+def Best_model(model_list, train, metric = 'MAPE', exog = None, period =14):
   results = {}
   Max_Dev = float("Inf")
   i = 0
@@ -70,12 +69,11 @@ def Best_model_V2(model_list, train, metric = 'MAPE', exog = None, period =14):
       Max_Dev = met
       results['Output'] = r
       results['Model'] = m
-      results['metric'] = met
     i+=1
   print('Best Model: ',results['Model'])
   return results
 
-def To_Date_Data(Data, var_list, period =14, mode = 'FORECAST'):
+def Get_fuel_forecast(Data, var_list, period =14, mode = 'FORECAST'):
   Num_Var = len(var_list)
   fig, axes = plt.subplots(nrows= Num_Var, ncols=1)
   Today = datetime.date.today() 
@@ -85,7 +83,6 @@ def To_Date_Data(Data, var_list, period =14, mode = 'FORECAST'):
   test = Data['Date'].dropna()
   Last_Index = test.index[-1]
   Last_Date = Data.loc[Last_Index,'Date']
-  Last_Date = Last_Date 
   d_range = pd.date_range(start = Last_Date, end = Forecast_Date)
   i = 0    
   for d in d_range:
@@ -96,7 +93,6 @@ def To_Date_Data(Data, var_list, period =14, mode = 'FORECAST'):
     test = Data[col].dropna()
     Last_Index = test.index[-1]
     Last_Date = Data.loc[Last_Index,'Date']
-    Last_Date = Last_Date 
     Last_Value = Data.loc[Last_Index, col]
     FORECAST_PERIOD = max((Forecast_Date - Last_Date).days,0)
     d_range = pd.date_range(start = Last_Date + timedelta(days = 1), end = Forecast_Date)
@@ -115,39 +111,41 @@ def To_Date_Data(Data, var_list, period =14, mode = 'FORECAST'):
       series = TimeSeries.from_dataframe(df, time_col = 'Date', freq = 'd', fill_missing_dates = True)
       temp_serie = TimeSeries.from_dataframe(temp, time_col = 'Date', freq = 'd', fill_missing_dates = True)
       models_list = []
-      Arima_model = ARIMA.gridsearch(parameters = parameters["ARIMA"], forecast_horizon = FORECAST_PERIOD, series = series,  verbose = False, n_jobs = -1,  future_covariates=temp_serie)
+      Arima_model = ARIMA.gridsearch(parameters = parameters["ARIMA"], forecast_horizon = FORECAST_PERIOD, series = series,  verbose = False, n_jobs = -1,  future_covariates = temp_serie)
       models_list.append(Arima_model[0])
-      Best_Model = Best_model_V2(models_list, series, metric = 'MAPE', exog = temp_serie, period = FORECAST_PERIOD)  
+      Best_Model = Best_model(models_list, series, metric = 'MAPE', exog = temp_serie, period = FORECAST_PERIOD)  
       Best_Model['Model'].fit(series, future_covariates=temp_serie)
       if mode == 'BACKTEST':
         f = Best_Model['Model'].historical_forecasts(series, start = START_POINT, forecast_horizon = 14, verbose = False,  future_covariates = temp_serie)
+        df_forecast = f.pd_dataframe()
+        mape = metrics.metrics.mape(series, f)
+      
       else:
         f = Best_Model['Model'].predict(FORECAST_PERIOD, future_covariates=temp_serie)
-      
-      f.to_csv('time_series.csv')      
-      df_forecast = f.pd_dataframe()
-      
-      #axs[subp] = f.plot()
-      #plt.plot(f.values())
+        #mape = metrics.metrics.mape(series, f)
+        df_forecast = f.pd_dataframe()
+        i = 1
+        for d in d_range:
+          Data.loc[Last_Index + i , col] = df_forecast.iloc[i-1, 0]
+          i+= 1
+
       plt.subplot(Num_Var,1,subp)
       plt.plot(series.pd_dataframe()) 
-      plt.plot(df_forecast, label = col) 
+      plt.plot(df_forecast) 
+      plt.legend(['real',col ], loc ="upper left" )
+      
       #plt.plot(f) 
       #ax[subp,0].plot(series) 
       #series.plot(ax = axes[subp])
       #axs[subp] = f.plot()
-      i = 1
-      for d in d_range:
-        Data.loc[Last_Index + i , col] = df_forecast.iloc[i-1, 0]
-        i+= 1
-
+      
       subp += 1
   winsound.Beep(440, 150)
   plt.savefig('Gas_Price.pdf')
   plt.show()
   Data.to_csv('Fuel_Price_Forecast.csv')
 
-To_Date_Data(Fuel_Data, Fuel_list, 'BACKTEST')
+Get_fuel_forecast(Fuel_Data, Fuel_list, mode = 'FORECAST')
 
 
 '''
